@@ -12,6 +12,9 @@ namespace API.Interfaces
         Task<IEnumerable<Child>> GetChildrenAsync();
         Task<Child> GetChildByIdAsync(int chd);
         Task<Child> GetChildByCodeAsync(string chldcode);
+         Task<ChildPhotos> GetPhotoAsync (int photoid);
+
+        Task<ChildStudyReport> GetChildStudyReportAsync (int studyid);
          
         Task<bool> SaveAllAsync();
         void Update(Child  child);
