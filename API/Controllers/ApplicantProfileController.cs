@@ -29,15 +29,11 @@ namespace API.Controllers
         }
 
         [HttpPost]
-         [Authorize]
+         [Authorize(Policy="ApplicationRole")]
          public async Task<ActionResult<ApplicantProfileDto>> AddAppilcantProfile(ApplicantProfileDto applicantProfile)
         {
-             var curentuser = await _userManager.FindByEmailFromClaimsPrinciple(User);         
-            if(curentuser == null){
-                  return NotFound("The Applicant was not found");
-             }
-              var  curentuserId = curentuser.Id;
-               var emailfromUsermanager = curentuser.Email;
+            var userIdfromManager = HttpContext.User.RetrieveIdFromPrincipal();
+            var emailfromUsermanager = HttpContext.User.RetrieveEmailFromPrincipal();
 
              var appProfile =new ApplicantProfile
         {
@@ -49,7 +45,7 @@ namespace API.Controllers
             DateofBirth = applicantProfile.DateofBirth,
             UserName = emailfromUsermanager,
             
-            AppUserId = curentuserId
+            AppUserId = userIdfromManager
 
         };
 
@@ -67,7 +63,7 @@ namespace API.Controllers
             DateofBirth = applicantProfile.DateofBirth,
             UserName = emailfromUsermanager,
             
-            AppUserId = curentuserId
+            AppUserId = userIdfromManager
 
     
          };
@@ -75,8 +71,8 @@ namespace API.Controllers
         }
 
 
-         [Authorize]
-         [HttpGet]
+        [HttpGet]
+        [Authorize(Policy="CanAccessApplicantDataRole")]
          public async Task<ActionResult<ReturnApplicantProfileDto>> GetApplicationProfileAsync()
         {
             

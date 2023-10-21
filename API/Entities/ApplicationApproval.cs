@@ -11,7 +11,7 @@ namespace API.Entities
     {
          public int Id {get; set;}
          public string Comment {get; set;}
-        public bool FosterParentApproved {get; set;}
+        [Required] public string FosterParentApproved {get; set;}
         
         [Required] public string ApprovedBy {get; set;}
       

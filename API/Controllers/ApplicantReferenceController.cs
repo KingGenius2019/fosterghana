@@ -29,16 +29,12 @@ namespace API.Controllers
 
         
         [HttpPost]
-         [Authorize]
+         [Authorize(Policy="ApplicationRole")]
          public async Task<ActionResult<ApplicantReferenceDto>> AddAppilcantReference(ApplicantReferenceDto references)
         {
-             var curentuser = await _userManager.FindByEmailFromClaimsPrinciple(User);         
-            if(curentuser == null){
-                  return NotFound("The Applicant was not found");
-             }
-              var  curentuserId = curentuser.Id;
-            //    var emailfromUsermanager = curentuser.Email;
-
+           
+            var userIdfromUserManager = HttpContext.User.RetrieveIdFromPrincipal();
+            
              var appReferee =new ApplicantReferences
         {
           
@@ -47,9 +43,9 @@ namespace API.Controllers
             DateOfRelationship = references.DateOfRelationship,
             RefereePhoneNumber = references.RefereePhoneNumber,
             RefereeEmail = references.RefereeEmail,
-            // UserName = emailfromUsermanager,
+           
             
-            UserId = curentuserId
+            UserId = userIdfromUserManager
 
         };
 
@@ -67,15 +63,16 @@ namespace API.Controllers
             RefereeEmail = references.RefereeEmail,
             // UserName = emailfromUsermanager,
             
-            UserId = curentuserId
+            UserId = userIdfromUserManager
 
         };
          
         }
 
 
-         [Authorize]
+        
          [HttpGet]
+         [Authorize(Policy="CanAccessApplicantDataRole")]
          public async Task<ActionResult<IEnumerable<ApplicantReferenceReturnDTo>>> GetApplicationReferenceAsync()
         {
             

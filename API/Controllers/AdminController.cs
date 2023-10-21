@@ -2,7 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Data;
+using API.Data.Dtos;
 using API.Entities.Identity;
+using API.Extensions;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,13 +17,17 @@ namespace API.Controllers
     public class AdminController : BaseApiController
     {
          private readonly UserManager<AppUser> _userManager;
-         public AdminController(UserManager<AppUser> userManager)
+        private readonly ApplicationDbConext _dbConext;
+        private readonly IMapper _mapper;
+         public AdminController(UserManager<AppUser> userManager, ApplicationDbConext dbConext, IMapper mapper)
         {
+            _mapper = mapper;
+            _dbConext = dbConext;
       
             _userManager = userManager;
         }
 
-        // [Authorize]
+        [Authorize]
         [HttpGet("users")]
         public async Task<ActionResult> GetUsersWithRoles()
         {
@@ -38,6 +46,25 @@ namespace API.Controllers
                 .ToListAsync();
 
              return Ok(users);
+        }
+
+         [HttpGet("userdetail")]
+         [Authorize]
+        public async Task<ActionResult<GetUserDetailsDto>> GetDetailsOfUSer(string email)
+        {
+            // var userWithDetails = await _userManager.Users
+              var userWithDetails = await _dbConext.Users
+            //    .Include(x => x.FosterApplications)
+              .Include(x => x.ApplicantProfiles)
+               .Include(x => x.ApplicantAddress)
+               .Include(x => x.ApplicantContacts)
+                .Include(x => x.ApplicantEducations)
+              .SingleOrDefaultAsync(u => u.UserName == email);
+              return _mapper.Map<GetUserDetailsDto>(userWithDetails);
+            //   var userDetails = await _userManager.FindByEmailFromClaimsPrinciple(User)
+            //   .ToListAsync();
+            //  return Ok(userWithDetails);
+           
         }
     }
 }

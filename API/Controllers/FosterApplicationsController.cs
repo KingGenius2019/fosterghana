@@ -8,6 +8,7 @@ using API.Data.Dtos;
 using API.Entities;
 using API.Entities.Identity;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -17,7 +18,7 @@ using Microsoft.Extensions.Logging;
 
 namespace API.Controllers
 {
-    [Authorize]
+    
     public class FosterApplicationsController : BaseApiController
     {
        
@@ -36,18 +37,19 @@ namespace API.Controllers
         }
 
         [HttpPost]
+         [Authorize(Policy="ApplicationRole")]
         public async Task<ActionResult<FosterApplications>> AddNewApplication(FosterApplicationDto application)
         {
             
-              var currentUser = await _userManager.FindByEmailFromClaimsPrinciple(User);
-            if (currentUser == null)
-            {
-                return NotFound("The user details missing");
-            }
+            //   var currentUser = await _userManager.FindByEmailFromClaimsPrinciple(User);
+            // if (currentUser == null)
+            // {
+            //     return NotFound("The user details missing");
+            // }
             
 
-            var curentuserId = currentUser.Id;
-            var userEmail = currentUser.Email;
+            var theUserId = HttpContext.User.RetrieveIdFromPrincipal();
+            var userEmail = HttpContext.User.RetrieveEmailFromPrincipal();
 
             var fosterApplications = new FosterApplications  
             {
@@ -61,7 +63,7 @@ namespace API.Controllers
                 AcceptChildWithSpecialNeeds = application.AcceptChildWithSpecialNeeds,
                 SpecifyChildWithSpecialNeeds = application.SpecifyChildWithSpecialNeeds,
                 ApplicantUserName = userEmail,
-                UserId = curentuserId,
+                UserId = theUserId,
             };
 
              var newapply = _mapper.Map<FosterApplicationDto>(application);
@@ -81,26 +83,30 @@ namespace API.Controllers
                 AcceptChildWithSpecialNeeds = application.AcceptChildWithSpecialNeeds,
                 SpecifyChildWithSpecialNeeds = application.SpecifyChildWithSpecialNeeds,
                 ApplicantUserName = userEmail,
-                UserId = curentuserId,
+                UserId = theUserId,
             };
 
         }
         
-           [HttpGet]
-          [Authorize]
-         public async Task<ActionResult<IEnumerable<FosterApplicationReturnedDto>>> GetAllApplications()
+        [HttpGet]
+        [Authorize(Policy="CanAccessFosterParentDataRole")]
+         public async Task<ActionResult<IEnumerable<FosterApplicationReturnedDto>>> GetAllApplications([FromQuery]ApplicantParams applicantParams)
         {
-            var applications = await _unitOfWork.FosterApplicationRepository.GetApplicantsAsync();
+            var applications = await _unitOfWork.FosterApplicationRepository.GetApplicantsAsync(applicantParams);
                     
             var returnapplicants = _mapper.Map<IEnumerable<FosterApplicationReturnedDto>>(applications);
                    
-            return Ok(returnapplicants);
+            // return Ok(returnapplicants);
             // .ToListAsync();
+             Response.AddPaginationHeader(applications.CurrentPage, applications.PageSize, applications.TotalCount, applications.TotalPages);
+            return Ok(returnapplicants);
 
         }
 
+      
+
         [HttpGet("getuserapp")]
-         [Authorize]
+         [Authorize(Policy="ApplicationRole")]
         public async Task<ActionResult<List<FosterApplicationReturnedDto>>> GetUserFosterApplication( [FromQuery]string userId)
         { 
           
@@ -123,7 +129,7 @@ namespace API.Controllers
         }
 
          [HttpGet("{applyid}")]
-        [Authorize]
+        [Authorize(Policy="CanAccessApplicantDataRole")]
         public async Task<ActionResult<FosterApplicationDetailDto>> GetApplicationWithId(int applyid)
         {
             var applicantion = await _unitOfWork.FosterApplicationRepository.GetApplicantByIdAsync(applyid);
@@ -132,8 +138,8 @@ namespace API.Controllers
             return Ok(applicantionFoster);
         }
 
-            [HttpPut("{applyid:int}")]
-              [Authorize]
+        [HttpPut("{applyid:int}")]
+        [Authorize(Policy="CanAccessApplicantDataRole")]
         public async Task<ActionResult> UpdateApplicant(int applyid, FosterApplicationDto applicationUpdateDto)
         {
             
@@ -149,6 +155,19 @@ namespace API.Controllers
                   if (await _unitOfWork.SaveAllAsync()) return NoContent();
 
                   return BadRequest("Failed to update the application");
+        }
+
+        
+          [HttpPost("search")]
+           [Authorize(Policy ="CanDoPlacement")]
+        public async Task<ActionResult<List<SearchFosterApplicationDto>>> SearchByName([FromBody] string name)
+        {
+              
+            if (string.IsNullOrWhiteSpace(name)) { return new List<SearchFosterApplicationDto>(); }
+           var searchapplicantion = await _unitOfWork.FosterApplicationRepository.SearchApplicationAsync(name);
+           var selectedapp = _mapper.Map<List<SearchFosterApplicationDto>>(searchapplicantion);
+           return Ok(selectedapp);
+      
         }
        
     }

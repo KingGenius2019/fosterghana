@@ -7,10 +7,12 @@ using API.Data.Dtos;
 using API.Entities;
 using API.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
+    [Authorize(Policy="CanDoFileUpload")]
     [Route("api/application/{applyid}/applicantphotos")]
     public class ApplicantPhotosController : BaseApiController
     {
@@ -28,8 +30,10 @@ namespace API.Controllers
             _mapper = mapper;
             _host = host;
         }
-
-           [HttpGet("{id}", Name = "GetApplicantPhoto")]
+        
+         [Authorize(Policy="CanAccessApplicantDataRole")]
+        [HttpGet("{id}", Name = "GetApplicantPhoto")]
+      
          public async Task<IActionResult> GetApplicantPhoto(int id)
         {
             var apphotoFromRepo = await _unitOfWork.FosterApplicationRepository.GetApplicantPhotoAsync(id);
@@ -40,6 +44,7 @@ namespace API.Controllers
         }
 
          [HttpPost]
+         [Authorize(Policy="ApplicationRole")]
          public async Task<ActionResult<ApplicantPhotoDto>> AddPhoto(int applyid, [FromForm] IFormFile file)
         {
             var applicant = await _unitOfWork.FosterApplicationRepository.GetApplicantByIdAsync(applyid);

@@ -17,6 +17,8 @@ namespace API.Entities
         public int ChildId {get; set;}
         public virtual Child Child {get; set;} 
         public string ApprovedBy {get; set;}
+
+        
         public DateTime ApprovalDate {get; set;}
 
         public DateTime ApprovedDate {get; set;}=DateTime.Now;

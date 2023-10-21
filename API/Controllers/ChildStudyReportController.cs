@@ -6,6 +6,7 @@ using API.Data.Dtos;
 using API.Entities;
 using API.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -29,7 +30,7 @@ namespace API.Controllers
         }
 
          [HttpGet("{id}", Name = "GetChildStudyReport")]
-        //    [Authorize(Policy ="ChildDataRole")]
+         [Authorize(Policy ="CanDoFileUpload")]
         public async Task<IActionResult> GetPhoto(int id)
         {
             var photoFromRepo = await _childRepository.GetPhotoAsync(id);
@@ -40,7 +41,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        //   [Authorize(Policy ="ChildDataRole")]
+        [Authorize(Policy ="CanDoFileUpload")]
         public async Task<ActionResult<ChildStudyReportDto>> AddPhoto(int chld, [FromForm]IFormFile file)
         {
             //get the child
@@ -48,7 +49,7 @@ namespace API.Controllers
             if (thechild == null)
                 return NotFound("The Child Adding his/her Photos was not found");
 
-           var childid = thechild.ld;
+           var childid = thechild.Id;
 
             var extension = Path.GetExtension(file.FileName);
             // using guid to generate file names
@@ -83,7 +84,7 @@ namespace API.Controllers
               await _childRepository.SaveAllAsync();
    
             var documentToReturn = _mapper.Map<ChildStudyReport, ChildStudyReportDto>(childstudyreports);
-            return CreatedAtRoute("GetChildStudyReport", new { chld = thechild.ld, id = childstudyreports.ChildId}, documentToReturn);
+            return CreatedAtRoute("GetChildStudyReport", new { chld = thechild.Id, id = childstudyreports.ChildId}, documentToReturn);
             
 
         }

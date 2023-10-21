@@ -15,7 +15,7 @@ namespace API.Interfaces
         IChildApprovals ChildApprovalRepository {get;}
         IApplicationAssessment AssessApplicationRepository {get;}
         IApplicationApprovalInterface ApplicationApprovalRepository {get;}
-        
+        IPlacementInterface PlacementRepository {get;}
 
          
         Task<bool> SaveAllAsync();

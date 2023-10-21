@@ -7,13 +7,16 @@ using API.Data.Dtos;
 using API.Entities;
 using API.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
+
 {
     [Route("api/application/{applyid}/homestudyreport")]
     public class ApplicantHomeStudyController : BaseApiController
     {
+        
         private readonly string[] AcceptedFiles = new[] { ".pdf", ".doc"};
         private readonly IUnitOfWorkInterface _unitOfWork;
         private readonly ApplicationDbConext _dbConext;
@@ -29,8 +32,8 @@ namespace API.Controllers
             _unitOfWork = unitOfWork;
         }
 
-
-                [HttpGet("{id}", Name = "gethomestudy")]
+        [Authorize(Policy="CanDoFileUpload")]
+        [HttpGet("{id}", Name = "gethomestudy")]
          public async Task<IActionResult> GetHomestudyReport(int homeid)
         {
             var apphotoFromRepo = await _unitOfWork.FosterApplicationRepository.GetApplicantHomeStudyAsync(homeid);
@@ -41,6 +44,7 @@ namespace API.Controllers
         }
 
 
+        [Authorize(Policy="CanDoFileUpload")]
          [HttpPost]
          public async Task<ActionResult<ApplicantHomeStudyReportDTo>> AddHomeStudyReport(int applyid, [FromForm] IFormFile file)
         {

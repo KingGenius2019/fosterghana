@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using API.Data;
 using API.Data.Dtos;
@@ -31,20 +32,14 @@ namespace API.Controllers
             _unitOfWork = unitOfWork;
         }
 
-            [Authorize]
+     
         [HttpPost]
+        [Authorize(Policy="CanReviewAndApprove")]
         public async Task<ActionResult<ApplicationApprovalDto>> AddApplicationApprovalAsync(ApplicationApprovalDto applicationApproval, int applyid)
         {
             
-            //  getting the current login user;
-            var approvingUser = await _userManager.FindByEmailFromClaimsPrinciple(User); 
-
-            
-             if(approvingUser == null){
-                return NotFound(new ApiResponse(404, "The details of the current user assessing was not found"));
-               
-             }
-             var  userNametoApproval = approvingUser.DisplayName;
+            //  getting the current login user Display Name;
+            var userNametoApproval = HttpContext.User?.Claims?.FirstOrDefault(u =>u.Type == ClaimTypes.GivenName)?.Value;
 
              //getting the application
              var getApplicationToApproval = await _unitOfWork.FosterApplicationRepository.GetApplicantByIdAsync(applyid);
@@ -82,8 +77,9 @@ namespace API.Controllers
             
         }
 
-        [Authorize]
+        
         [HttpGet]
+        [Authorize(Policy="CanReviewAndApprove")]
          public async Task<ActionResult<IEnumerable<ApplicationApprovalDto>>> GetAllApplicationApprovalsAsync()
         {
             var approvalsReturned = await _unitOfWork.ApplicationApprovalRepository.GetApplicationApprovalsAsync();

@@ -8,18 +8,15 @@ namespace API.Data.Dtos
 {
     public class ChildToReturn
     {
-        public int ld { get; set; }
+        public int Id { get; set; }
         [Required]
         public string ChildCode { get; set; } = string.Empty;
         [Required]
         public string FirstName { get; set; } = string.Empty;
+        
+         public string SurName { get; set; } = string.Empty;
 
-        public string MiddleName { get; set; } = null;
-
-        [Required]
-        public string SurName { get; set; } = string.Empty;
-
-        public string KnownAs { get; set; } = null;
+         public string KnownAs { get; set; } = null;
 
         [Required] public string Sex { get; set; } = string.Empty;
 
@@ -44,6 +41,6 @@ namespace API.Data.Dtos
          public ChildStudyReportDto ChildStudyReports {get; set;}
          public ICollection<ChildFamilyDetailDto> ChildFamilyDetails {get; set;}
          public ICollection<ReviewChildDto> ReviewChildren {get; set;}
-           public ICollection<ChildApprovalDto> ChildApprovals {get; set;}
+        public ICollection<ChildApprovalDto> ChildApprovals {get; set;}
     }
 }

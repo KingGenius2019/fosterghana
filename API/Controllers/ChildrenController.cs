@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using API.Data;
 using API.Data.Dtos;
 using API.Entities;
+using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -30,7 +32,7 @@ namespace API.Controllers
         }
 
          [HttpPost("addchild")]
-        //  [Authorize(Policy = "ChildDataRole")]
+        [Authorize(Policy="CanAccessChildDataRole")]
         public async Task<ActionResult<ChildDto>> AddChildAsync(Child child)
         {
                 var newchild =  _mapper.Map<ChildDto>(child);
@@ -51,7 +53,7 @@ namespace API.Controllers
         
 
           [HttpGet("{chld}")]
-        //  [Authorize(Policy = "ChildDataRole")]
+          [Authorize(Policy="CanAccessChildDataRole")]
          public async Task<ActionResult<ChildToReturn>> GetChildById(int chld)
         {
             var mychild = await _childInterface.GetChildByIdAsync(chld);
@@ -60,11 +62,32 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ChildToReturn>>> GetAllChildrenAsync()
+         [Authorize(Policy="CanAccessChildDataRole")]
+        public async Task<ActionResult<IEnumerable<ChildToReturn>>> GetAllChildrenAsync([FromQuery]ChildParams childParams)
         {
-            var childrenReturned = await _childInterface.GetChildrenAsync();
+
+            var childrenReturned = await _childInterface.GetChildrenAsync(childParams);
+                //   if (string.IsNullOrEmpty(childParams.Sex))
+                //      {
+                //         childParams.Sex = "Male"; childParams.Sex = "Female";
+                //      }   
                 var returnchidren = _mapper.Map<IEnumerable<ChildToReturn>>(childrenReturned);
+
+                 Response.AddPaginationHeader(childrenReturned.CurrentPage, childrenReturned.PageSize, childrenReturned.TotalCount, childrenReturned.TotalPages);
+                      
             return Ok(returnchidren);
+          
+        }
+
+        [HttpPost("search")]
+        [Authorize(Policy ="CanDoPlacement")]
+        public async Task<ActionResult<List<SelectedChildDto>>> SearchByNameToMatchWithApplicant([FromBody] string searchItem)
+        {
+              
+            if (string.IsNullOrWhiteSpace(searchItem)) { return new List<SelectedChildDto>(); }
+           var searchChild = await _childInterface.SearchChildAsync(searchItem);
+           var selectedChild = _mapper.Map<List<SelectedChildDto>>(searchChild);
+           return Ok(selectedChild);
 
         }
    

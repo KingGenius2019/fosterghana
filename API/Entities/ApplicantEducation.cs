@@ -14,6 +14,8 @@ namespace API
         public string InstitutionName {get; set;}
         public string  Course {get; set;}
         public string  Qualification {get; set;}
+
+         public string ApplicantUserName {get; set;}
         public DateTime YearOfGraduation {get; set;}
         public string UserId {get; set;}
         public AppUser User {get; set;}

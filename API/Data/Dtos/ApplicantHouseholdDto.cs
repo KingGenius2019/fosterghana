@@ -18,6 +18,9 @@ namespace API.Data.Dtos
         // public int NoOfChildren {get; set;}
         public string AgesAdult {get; set;}
         public string AgesChildren {get; set;}
+
+          [EmailAddress]
+         public string ApplicantUserName {get; set;}
         public string UserId {get; set;}
     }
 }

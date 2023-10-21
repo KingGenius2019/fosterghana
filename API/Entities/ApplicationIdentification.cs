@@ -15,6 +15,9 @@ namespace API.Entities
          [StringLength(150)]public string NationalIdNo {get; set;}
         public string IdentityPicture {get; set;}
 
+        [EmailAddress]
+         public string ApplicantUserName {get; set;}
+
         public string UserId {get; set;}
         public AppUser User {get; set;}
     }

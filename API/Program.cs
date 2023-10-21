@@ -11,18 +11,20 @@ using API.MiddleWare;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
+
 // Configuration config
 builder.Services.AddDbContext<ApplicationDbConext>(options =>
-           options.UseSqlServer(builder.Configuration.GetConnectionString("AppConnection")
+           options.UseNpgsql(builder.Configuration.GetConnectionString("AppConnection")
            // , x => x.UseDateOnlyTimeOnly()
 
            ));
 
 // Add services to the container.
 
-
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Services.AddControllers();
 
 
@@ -49,11 +51,16 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200"));
 app.UseStaticFiles();
+// app.UseStaticFiles(new StaticFileOptions
+// {
+//     FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Content")),
+//     RequestPath = "/Content"
+// });
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.MapFallbackToController("Index", "Fallback");
 
 using var scope = app.Services.CreateScope();
 

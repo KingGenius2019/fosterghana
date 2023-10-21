@@ -30,17 +30,11 @@ namespace API.Controllers
 
          
         [HttpPost]
+         [Authorize(Policy = "ApplicationRole")]
          public async Task<ActionResult<ApplicantContactDto>> AddAppilcantContact(ApplicantContactDto applicantContact)
         {
-             var curentuser = await _userManager.FindByEmailFromClaimsPrinciple(User);         
-            if(curentuser == null){
-                  return NotFound("The user was not found");
-             }
-              var  curentuserId = curentuser.Id;
-               var emailfromUsermanager = curentuser.Email;
-                 if(emailfromUsermanager == null){
-                  return NotFound("The email of the user was not found");
-             }
+            var userIdFromClaim = HttpContext.User.RetrieveIdFromPrincipal();
+            var emailfromUsermanager = HttpContext.User.RetrieveEmailFromPrincipal();
 
             var newApplicantContact = new ApplicantContact
             {
@@ -48,9 +42,8 @@ namespace API.Controllers
                     SecondaryContactNo = applicantContact.SecondaryContactNo,
                     EmailAddress = emailfromUsermanager,
                     PreferenceCorrepondence = applicantContact.PreferenceCorrepondence,
-                    PostalAddress = applicantContact.PostalAddress,
-                  
-                    UserId = curentuserId,
+                                   
+                    UserId = userIdFromClaim,
          
             };
 
@@ -65,14 +58,15 @@ namespace API.Controllers
                     SecondaryContactNo = applicantContact.SecondaryContactNo,
                     EmailAddress = emailfromUsermanager,
                     PreferenceCorrepondence = applicantContact.PreferenceCorrepondence,
-                    PostalAddress = applicantContact.PostalAddress,
-                    UserId = curentuserId,
+                 
+                    UserId = userIdFromClaim,
          
             };
         }
 
        
          [HttpGet]
+          [Authorize(Policy = "CanAccessApplicantDataRole")]
          public async Task<ActionResult<ApplicantContactReturnDto>> GetApplicationContactAsync()
         {
             

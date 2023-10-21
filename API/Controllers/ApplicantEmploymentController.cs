@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using API.Data;
 using API.Data.Dtos;
@@ -28,15 +29,15 @@ namespace API.Controllers
         }
 
          [HttpPost]
-         [Authorize]
+         [Authorize(Policy="ApplicationRole")]
          public async Task<ActionResult<ApplicantEmploymentHistoryDto>> AddAppilcantEmployement(ApplicantEmploymentHistoryDto employment)
         {
-             var curentuser = await _userManager.FindByEmailFromClaimsPrinciple(User);         
-            if(curentuser == null){
-                  return NotFound("The Applicant was not found");
-             }
-              var  curentuserId = curentuser.Id;
-            //    var emailfromUsermanager = curentuser.Email;
+            //  var curentuser = await _userManager.FindByEmailFromClaimsPrinciple(User);         
+            // if(curentuser == null){
+            //       return NotFound("The Applicant was not found");
+            //  }
+              var  UserId  = HttpContext.User?.Claims?.FirstOrDefault(u =>u.Type == ClaimTypes.NameIdentifier)?.Value;
+              var emailforUsername = HttpContext.User.RetrieveEmailFromPrincipal();
 
              var appEmployment =new ApplicantEmploymentHistory
         {
@@ -47,8 +48,8 @@ namespace API.Controllers
             DateStarted = employment.DateStarted,
             DateExited = employment.DateExited,
             Responsibilities = employment.Responsibilities,
-                      
-            UserId = curentuserId
+             ApplicantUserName =    emailforUsername,      
+            UserId = UserId
 
         };
 
@@ -65,16 +66,17 @@ namespace API.Controllers
             DateStarted = employment.DateStarted,
             DateExited = employment.DateExited,
             Responsibilities = employment.Responsibilities,
-                      
-            UserId = curentuserId
+            ApplicantUserName =    emailforUsername,  
+            UserId = UserId
 
         };
          
         }
 
-
-         [Authorize]
+  
          [HttpGet]
+         [Authorize(Policy="CanAccessApplicantDataRole")]
+
          public async Task<ActionResult<IEnumerable<ApplicantEmploymentHistoryDto>>> GetApplicationEmploymentAsync()
         {
              var appEmployment = await _userManager.FindUserByClaimsPrincipleWithApplicanEmploymentHistorydAsync(User);

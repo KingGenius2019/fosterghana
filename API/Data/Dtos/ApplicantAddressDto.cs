@@ -18,6 +18,9 @@ namespace API.Data.Dtos
         [Required] public string District  {get; set;}
 
         [Required] public string Region {get; set;}
+
+        [EmailAddress]
+        public string ApplicantUserName {get; set;}
        
          public string AppUserId {get; set;}
 

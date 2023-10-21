@@ -91,7 +91,7 @@ namespace API.Controllers
             var result = await _userManager.CreateAsync(user, registerDto.Password);
 
             if (!result.Succeeded) return BadRequest("Sorry Problem Occurredd Creating the new User");
-             var roleAddResult = await _userManager.AddToRoleAsync(user, "No-Roll-Set");
+             var roleAddResult = await _userManager.AddToRoleAsync(user, "Applicant");
             
             if (!roleAddResult.Succeeded) return BadRequest("Failed to add to role");
 

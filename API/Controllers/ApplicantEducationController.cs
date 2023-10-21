@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using API.Data;
 using API.Data.Dtos;
@@ -25,16 +26,13 @@ namespace API.Controllers
             _userManager = userManager;
         }
 
-          [Authorize]
+       
         [HttpPost]
+        [Authorize(Policy = "ApplicationRole")]
          public async Task<ActionResult<ApplicantEducationDto>> AddAppilcantAddress(ApplicantEducationDto applicantEducation)
         {
-             var curentuser = await _userManager.FindByEmailFromClaimsPrinciple(User);         
-            if(curentuser == null){
-                  return NotFound("The Applicant was not found");
-             }
-              var  curentuserId = curentuser.Id;
-               var emailfromUsermanager = curentuser.Email;
+          var curentuserId = HttpContext.User?.Claims?.FirstOrDefault(u =>u.Type == ClaimTypes.NameIdentifier)?.Value;
+          var emailUsermanager = HttpContext.User.RetrieveEmailFromPrincipal();
 
             var newApplicantEdu = new ApplicantEducation
             {
@@ -42,7 +40,7 @@ namespace API.Controllers
                     Course = applicantEducation.Course,
                     Qualification = applicantEducation.Qualification,
                     YearOfGraduation = applicantEducation.YearOfGraduation,
-                                
+                     ApplicantUserName = emailUsermanager,           
                     UserId = curentuserId,
          
             };
@@ -58,14 +56,15 @@ namespace API.Controllers
                     Course = applicantEducation.Course,
                     Qualification = applicantEducation.Qualification,
                     YearOfGraduation = applicantEducation.YearOfGraduation,
-                                
+                      ApplicantUserName = emailUsermanager,             
                     UserId = curentuserId,
          
             };
         }
 
-         [Authorize]
+      
          [HttpGet]
+         [Authorize(Policy = "CanAccessApplicantDataRole")]
          public async Task<ActionResult<ApplicantEducationDto>> GetApplicationEducationAsync()
         {
             

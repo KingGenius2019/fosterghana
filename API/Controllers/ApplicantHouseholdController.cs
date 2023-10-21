@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Authorize]
+    
     public class ApplicantHouseholdController : BaseApiController
     {
         private readonly UserManager<AppUser> _userManager;
@@ -28,17 +28,12 @@ namespace API.Controllers
         }
 
          [HttpPost]
+         [Authorize(Policy="ApplicationRole")]
         public async Task<ActionResult<ApplicantHouseholdDto>> AddApplicantHouseHold(ApplicantHouseholdDto householdDto)
         {
            
-
-              var curentuser = await _userManager.FindByEmailFromClaimsPrinciple(User);         
-            if(curentuser == null){
-                  return NotFound("The Applicant was not found");
-             }
-              var  curentuserId = curentuser.Id;
-            //    var emailfromUsermanager = curentuser.Email;
-            // education.AppUserId = curentuserId;
+              var curentuserId = HttpContext.User.RetrieveIdFromPrincipal();
+            var emailForUser = HttpContext.User.RetrieveEmailFromPrincipal();
 
             var appHousehold = new ApplicantHousehold
             {
@@ -49,6 +44,7 @@ namespace API.Controllers
                 NoOfAdultMale = householdDto.NoOfAdultMale,
                 AgesAdult = householdDto.AgesAdult,
                 AgesChildren = householdDto.AgesChildren,
+                ApplicantUserName = emailForUser,
               
                 UserId = curentuserId,
 
@@ -67,12 +63,15 @@ namespace API.Controllers
                 NoOfAdultMale = householdDto.NoOfAdultMale,
                 AgesAdult = householdDto.AgesAdult,
                 AgesChildren = householdDto.AgesChildren,
+                ApplicantUserName = emailForUser,
               
                 UserId = curentuserId,
 
             };
         }
+
           [HttpGet]
+          [Authorize(Policy="CanAccessApplicantDataRole")]
          public async Task<ActionResult<IEnumerable<ApplicantHouseholdDto>>> GetApplicationHouseHoldAsync()
         {
             

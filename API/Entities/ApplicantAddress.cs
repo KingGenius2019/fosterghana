@@ -20,10 +20,13 @@ namespace API.Entities
         [StringLength(150)]public string District  {get; set;}
 
         [StringLength(150)]public string Region {get; set;}
-  
 
+         public string ApplicantUserName {get; set;}
+  
          public string AppUserId {get; set;}
         public AppUser User {get; set;}
+
+    //    public Placement Placements {get; set;}
 
     }
 }

@@ -24,6 +24,8 @@ namespace API.Data.Repositories
         public IApplicationAssessment AssessApplicationRepository => new AssessApplicationRepository(_dbconext);
         public IApplicationApprovalInterface ApplicationApprovalRepository => new ApplicationApprovalRepository(_dbconext);
 
+        public IPlacementInterface PlacementRepository => new PlacementRepository(_dbconext);
+
         // IChildInterface IUnitOfWorkInterface.ChildRepository => throw new NotImplementedException();
 
         public async Task<bool> SaveAllAsync()

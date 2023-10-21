@@ -17,7 +17,7 @@ namespace API.Entities
         
         [Required] public string Assessedby {get; set;}
       
-
+        
         [Required]   public DateTime AssesDate {get; set;}
          [Required]   public DateTime DateAssesed {get; set;}=DateTime.Now;
 

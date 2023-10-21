@@ -17,6 +17,8 @@ namespace API.Entities
        public DateTime DateStarted {get; set;}
        public DateTime DateExited {get; set;}
        public string Responsibilities {get; set;}
+
+        public string ApplicantUserName {get; set;}
        public string UserId {get; set;}
        public AppUser User {get; set;}
     }

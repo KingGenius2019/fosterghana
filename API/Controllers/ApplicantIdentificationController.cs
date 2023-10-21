@@ -30,8 +30,9 @@ namespace API.Controllers
             _userManager = userManager;
         }
 
-        [Authorize]
+      
         [HttpPost]
+        [Authorize(Policy="CanAccessApplicantDataRole")]
         public async Task<ActionResult> AddIdentification([FromForm]ApplicantIdentificationDto identificationDto)
         {
              var currentuser = await _userManager.FindByEmailFromClaimsPrinciple(User);         
@@ -57,8 +58,9 @@ namespace API.Controllers
             return NoContent();
         }
 
-         [Authorize]
+        
          [HttpGet]
+         [Authorize(Policy="CanAccessApplicantDataRole")]
         public async Task<ActionResult<ApplicationIdentificationReturnDto>> GetIdentification()
         {
             

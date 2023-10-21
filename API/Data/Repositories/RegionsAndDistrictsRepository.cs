@@ -42,6 +42,13 @@ namespace API.Data.Repositories
              .ToListAsync();
         }
 
+        // public async Task<IEnumerable<Districts>> GetDistrictsByRegionCodeAsync(string rcode)
+        // {
+        //      return await _dbconext.Districts
+        //         // .Include(p => p.RegionsGhana)
+        //         .FirstOrDefaultAsync(c => c.RegionCode == rcode);
+        // }
+
         public async Task<RegionsInGhana> GetRegionByCodeAsync(string rcode)
         {
               return await _dbconext.RegionsInGhana
@@ -55,5 +62,9 @@ namespace API.Data.Repositories
            .Include(c => c.Districts)
            .ToListAsync();
         }
+
+     
+
+      
     }
 }

@@ -38,10 +38,10 @@ namespace API.Entities
          [StringLength(10)]
          public string ChildAgeRange => $"{PreferredMinChildAge} - {PreferredMaxChildAge}";
 
-        public bool ReadyToLetGofChild {get; set;}
-        public bool AcceptChildWithSpecialNeeds {get; set;}
+        public string ReadyToLetGofChild {get; set;}
+        public string AcceptChildWithSpecialNeeds {get; set;}
 
-        public string SpecifyChildWithSpecialNeeds {get; set;}
+        public string SpecifyChildWithSpecialNeeds {get; set;}="None";
 
         //This is use to get the details of the applicant
          [StringLength(150)]
@@ -56,6 +56,8 @@ namespace API.Entities
         public ICollection<ApplicantPhotos> ApplicantPhotos {get; set;}
         public ApplicantHomeStudyReport ApplicantHomeStudyReports {get; set;}
        public ICollection<ApplicationApproval> ApplicationApprovals {get; set;}
+
+       public Placement ParentPlacement {get; set;}
 
     }
 }

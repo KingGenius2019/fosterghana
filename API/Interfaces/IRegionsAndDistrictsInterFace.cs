@@ -15,5 +15,6 @@ namespace API.Interfaces
         Task<Districts> GetDistrictByCodeAsync(string dcode);
         Task<IEnumerable<Districts>> GetDistrictsAsync();
         Task<Districts> AddDistrictAsync(Districts districts);
+        // Task<IEnumerable<Districts>> GetDistrictsByRegionCodeAsync(string rcode);
     }
 }

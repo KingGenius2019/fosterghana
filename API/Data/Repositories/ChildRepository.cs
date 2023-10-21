@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Entities;
+using API.Helpers;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,15 +42,22 @@ namespace API.Data.Repositories
                 .Include(s =>s.ChildFamilyDetails)
                  .Include(c =>c.ReviewChildren)
                   .Include(c =>c.ChildApprovals)
-                .FirstOrDefaultAsync(c => c.ld == chd);
+                .FirstOrDefaultAsync(c => c.Id == chd);
         }
 
-        public async Task<IEnumerable<Child>> GetChildrenAsync()
-        {
-           return await _dbconext.Children
-           .Include(c => c.ChildPhotos)
+        public async Task<PagedList<Child>> GetChildrenAsync(ChildParams childParams)
+        { 
+            var query =  _dbconext.Children.AsQueryable()
+                 .Include(c => c.ChildPhotos)
+                   .AsNoTracking();
+            //  query = query.Where(c =>c.Age )
+         var minDob = DateTime.Today.AddYears(-childParams.MaxAge- 1);
+             
+             var maxDob = DateTime.Today.AddYears(-childParams.MinAge);
+            query = query.Where(u => u.DateOfBirth >= minDob && u.DateOfBirth <= maxDob);
+            //  query = query.Where(x => x.Sex== childParams.Sex);
 
-           .ToListAsync();
+         return await PagedList<Child>.CreateAsync(query.AsNoTracking(), childParams.PageNumber, childParams.PageSize);
         }
 
         public async Task<ChildStudyReport> GetChildStudyReportAsync(int studyid)
@@ -67,6 +75,15 @@ namespace API.Data.Repositories
         public async Task<bool> SaveAllAsync()
         {
             return await _dbconext.SaveChangesAsync() > 0;
+        }
+
+        public async Task<List<Child>> SearchChildAsync(string searchItem)
+        {
+             return await _dbconext.Children.Where(x => x.FirstName.Contains(searchItem) )
+              .Include(c =>c.ChildPhotos)
+             .Select(x => new Child { Id = x.Id, FirstName = x.FirstName, SurName = x.SurName, PhotoPath = x.PhotoPath, DefaultCode = x.ChildCode, SequenceNumbers = x.SequenceNumbers, Sex= x.Sex })
+            
+           .ToListAsync();
         }
 
         public void Update(Child child)

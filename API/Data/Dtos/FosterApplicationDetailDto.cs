@@ -32,12 +32,13 @@ namespace API.Data.Dtos
         
          public string ChildAgeRange {get; set;}
 
-        public bool ReadyToLetGofChild {get; set;}
-        public bool AcceptChildWithSpecialNeeds {get; set;}
+        public string ReadyToLetGofChild {get; set;}
+        public string AcceptChildWithSpecialNeeds {get; set;}
 
         public string SpecifyChildWithSpecialNeeds {get; set;}
         public string IsApplocationReviewed {get; set;}= "Under Review";
          public bool IsApplicationApproved {get; set;}
+         public string UserId {get; set;}
 
         //This is use to get the details of the applicant
          [StringLength(150)]

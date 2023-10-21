@@ -11,12 +11,11 @@ namespace API.Data.Dtos
          [Key]
         public int ContId {get; set;}
         [Required]public string PrimaryContactNo {get; set;}
-        [Required]public string SecondaryContactNo {get; set;}
+        public string SecondaryContactNo {get; set;}
       
         [EmailAddress]public string EmailAddress {get; set;}
         [Required]public string PreferenceCorrepondence {get; set;}
-       public string PostalAddress {get; set;}
-       
+               
         public string UserId {get; set;}
     }
 }

@@ -23,7 +23,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Policy="CanAccessChildDataRole")]
         public async Task<ActionResult<ChildFamilyDetailDto>> AddNewDetailsOfChildAsync (ChildFamilyDetail childFamily)
         {
             var newchildfamily =  _mapper.Map<ChildFamilyDetailDto>(childFamily);
@@ -32,7 +32,7 @@ namespace API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
+        [Authorize(Policy="CanAccessChildDataRole")]
         public async Task<ActionResult<ChildFamilyDetailDto>> GetChildFamilyByIdAsync(int id)
         {
             var familyById = await _unitOfWorkI.ChildFamilyDetailRepository.GetChildFamilyDetailByIdAsync(id);

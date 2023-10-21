@@ -30,7 +30,7 @@ namespace API.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize]
+        [Authorize(Policy="CanReviewAndApprove")]
         [HttpGet("{chld}")]
         public async Task<ActionResult<ChildToReturn>> GetChildReviewById(int chld)
         {
@@ -49,7 +49,7 @@ namespace API.Controllers
         }
    
 
-         [Authorize]
+         [Authorize(Policy="CanReviewAndApprove")]
         [HttpPost]
          public async Task<ActionResult<ReviewChildDto>> AddReviewChild(int id, ReviewChild reviewChild)
         {
@@ -61,7 +61,7 @@ namespace API.Controllers
                  return NotFound("The Child to review was not found");
             }
                
-            var childId = childtoreview.ld;
+            var childId = childtoreview.Id;
 
             //get the logged in user doing the reviewing
             var reviewBy = await _userManager.FindByEmailFromClaimsPrinciple(User);
@@ -71,9 +71,7 @@ namespace API.Controllers
                
              }
               var iamDoingTheReview = reviewBy.DisplayName;
-                
-           
-                   
+                  
               var addreviewchild = new ReviewChild 
               {
                 Comment= reviewChild.Comment, 

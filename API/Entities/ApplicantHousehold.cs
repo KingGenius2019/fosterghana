@@ -15,7 +15,7 @@ namespace API.Entities
         public int NoOfChildrenFemale {get; set;}
         public int NoOfAdultFemale {get; set;}
         public int NoOfAdultMale {get; set;}
-        // public int NoOfChildren {get; set;}
+         public string ApplicantUserName {get; set;}
         public string AgesAdult {get; set;}
         public string AgesChildren {get; set;}
         public string UserId {get; set;}

@@ -27,8 +27,9 @@ namespace API.Controllers
             _userManager = userManager;
         }
 
-        [Authorize]
+                
         [HttpPost]
+         [Authorize(Policy = "ApplicationRole")]
          public async Task<ActionResult<ApplicantAddressDto>> AddAppilcantAddress(ApplicantAddressDto applicantAddress)
         {
              var curentuser = await _userManager.FindByEmailFromClaimsPrinciple(User);         
@@ -47,15 +48,13 @@ namespace API.Controllers
                     // PostalAddress = applicantAddress.PostalAddress,
                     District = applicantAddress.District,
                     Region = applicantAddress.Region,
+                    ApplicantUserName = emailfromUsermanager,
               
                     AppUserId = curentuserId,
          
             };
 
-            // if (IsNullorEmpty curentuser.ApplicantAddress.Count == 1)
-            // {
-
-            // }
+           
               var newAppAddress = _mapper.Map<ApplicantAddressDto>(applicantAddress);
             var result = await _context.ApplicantAddress.AddAsync(newApplicantAddress);
             await _context.SaveChangesAsync();
@@ -69,14 +68,16 @@ namespace API.Controllers
                     // PostalAddress = applicantAddress.PostalAddress,
                     District = applicantAddress.District,
                     Region = applicantAddress.Region,
+                    ApplicantUserName = emailfromUsermanager,
                     
                     AppUserId = curentuserId,
          
             };
         }
 
-         [Authorize]
+       
          [HttpGet]
+          [Authorize(Policy = "CanAccessApplicantDataRole")]
          public async Task<ActionResult<ApplicantAddressDto>> GetApplicationAddressAsync()
         {
             

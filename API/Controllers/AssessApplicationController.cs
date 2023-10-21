@@ -19,6 +19,7 @@ namespace API.Controllers
     [Route("api/application/{applyid}/assessapplication")]
     public class AssessApplicationController : BaseApiController
     {
+        
         private readonly IUnitOfWorkInterface _unitOfWork;
         private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
@@ -30,20 +31,15 @@ namespace API.Controllers
         }
 
         
-        [Authorize]
+        
         [HttpPost]
+        [Authorize(Policy="CanReviewAndApprove")]
         public async Task<ActionResult<AssessApplicationDto>> ApplicationAsessment(AssessApplicationDto assessApplication, int applyid)
         {
             
-            //  getting the current login user;
-            var asessingUser = await _userManager.FindByEmailFromClaimsPrinciple(User); 
-
-            
-             if(asessingUser == null){
-                return NotFound(new ApiResponse(404, "The details of the current user assessing was not found"));
-                //   return NotFound("The login details of the current user was not found");
-             }
-             var  usertoAssess = asessingUser.DisplayName;
+            //  getting the current login user display name;
+          
+             var usertoAssess = HttpContext.User.RetrieveUserNameFromPrincipal();
 
              //getting the application
              var getApplication = await _unitOfWork.FosterApplicationRepository.GetApplicantByIdAsync(applyid);
@@ -83,6 +79,7 @@ namespace API.Controllers
         }
 
          [HttpGet("{assessId}")]
+         [Authorize(Policy="CanReviewAndApprove")]
         public async Task<ActionResult<AssessApplicationDto>> GetAssessApplication(int assessId)
         {
            

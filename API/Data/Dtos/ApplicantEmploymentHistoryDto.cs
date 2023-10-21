@@ -16,6 +16,9 @@ namespace API.Data.Dtos
        [Required]public DateTime DateStarted {get; set;}
        [Required]public DateTime DateExited {get; set;}
        public string Responsibilities {get; set;}
+
+        [EmailAddress]
+         public string ApplicantUserName {get; set;}
        public string UserId {get; set;}
     }
 }

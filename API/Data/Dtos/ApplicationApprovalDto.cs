@@ -10,7 +10,7 @@ namespace API.Data.Dtos
     {
          public int Id {get; set;}
          public string Comment {get; set;}
-        public bool FosterParentApproved {get; set;}
+        [Required] public string FosterParentApproved {get; set;}
         public string ApprovedBy {get; set;}
         [Required]   public DateTime ApprovalDate {get; set;}
         [Required]   public DateTime DateApprovalWasDone {get; set;}=DateTime.Now;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Entities;
+using API.Helpers;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,10 +32,26 @@ namespace API.Data.Repositories
              .SingleOrDefaultAsync(p => p.AppId == applyid);
         }
 
-        public async Task<IEnumerable<FosterApplications>> GetApplicantsAsync()
+        public async Task<PagedList<FosterApplications>> GetApplicantsAsync(ApplicantParams applicantParams)
         {
-            return await _dbconext.FosterApplications
-              .ToListAsync();
+            var query = _dbconext.FosterApplications
+        
+           .AsNoTracking();    
+            // return await _dbconext.FosterApplications
+            //   .ToListAsync();
+            // query = query.Where(x=> x.NatureOfApplication == applicantParams.NatureOfApplication);
+            
+             if(!string.IsNullOrEmpty(applicantParams.NatureOfApplication))
+             {
+               query = query.Where(x=> x.NatureOfApplication == applicantParams.NatureOfApplication);
+            }
+            
+             if(!string.IsNullOrEmpty(applicantParams.TypeOfFosterCare))
+            {
+               query = query.Where(x =>x.TypeOfFosterCare== applicantParams.TypeOfFosterCare);
+            }
+            
+            return await PagedList<FosterApplications>.CreateAsync(query.AsNoTracking(), applicantParams.PageNumber, applicantParams.PageSize);
         }
 
         public Task<FosterApplications> GetBirthCerificateAsync(int certId)
@@ -53,14 +70,13 @@ namespace API.Data.Repositories
         {
             return await _dbconext.FosterApplications.Include(x => x.User)
            .Where(x => x.UserId == userId)
-           
            .ToListAsync();
         }
 
           public async  Task<List<FosterApplications>> SearchApplicationAsync(string name)
         {
-                  return await _dbconext.FosterApplications.Where(x => x.NatureOfApplication.Contains(name) || x.ApplicationCode.Contains(name) || x.TypeOfFosterCare.Contains(name))
-             .Select(x => new FosterApplications { AppId = x.AppId, NatureOfApplication=x.NatureOfApplication, TypeOfFosterCare = x.TypeOfFosterCare, PreferredMinChildAge = x.PreferredMinChildAge, PreferredMaxChildAge = x.PreferredMaxChildAge, PreferredChildXtics = x.PreferredChildXtics,  })
+                  return await _dbconext.FosterApplications.Where(x => x.NatureOfApplication.Contains(name) || x.TypeOfFosterCare.Contains(name))
+             .Select(x => new FosterApplications { AppId = x.AppId, NatureOfApplication=x.NatureOfApplication, TypeOfFosterCare = x.TypeOfFosterCare, PreferredMinChildAge = x.PreferredMinChildAge, PreferredMaxChildAge = x.PreferredMaxChildAge })
            .ToListAsync();
         }
 
@@ -73,6 +89,12 @@ namespace API.Data.Repositories
         {
             var applicantphoto = await _dbconext.ApplicantHomeStudyReports.SingleOrDefaultAsync(h => h.HomeId == homeid);
             return applicantphoto;
+        }
+
+        public async Task<IEnumerable<FosterApplications>> GetApplicantsWithoutParamsAsync()
+        {
+             return await _dbconext.FosterApplications
+              .ToListAsync();
         }
     }
 }

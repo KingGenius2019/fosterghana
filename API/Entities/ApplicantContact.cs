@@ -18,7 +18,7 @@ namespace API.Entities
 
          public string PrimaryContactNo {get; set;}
 
-      
+        //  public string ApplicantUserName {get; set;}
         public string SecondaryContactNo {get; set;}
         public string EmailAddress {get; set;}
 
@@ -29,8 +29,7 @@ namespace API.Entities
         public string PreferenceCorrepondence {get; set;}
 
         [StringLength(200, MinimumLength = 3)]
-         public string PostalAddress {get; set;}
-       
+              
         public string UserId {get; set;}
         public AppUser User {get; set;}
         

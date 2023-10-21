@@ -16,7 +16,7 @@ namespace API.Data.Dtos
         [Required]    
         [EmailAddress]public string EmailAddress {get; set;}
         [Required]public string PreferenceCorrepondence {get; set;}
-       public string PostalAddress {get; set;}
+    //    public string PostalAddress {get; set;}
        
     }
 }

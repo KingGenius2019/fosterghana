@@ -31,7 +31,7 @@ namespace API.Controllers
 
         }
 
-        [Authorize]
+         [Authorize(Policy="CanReviewAndApprove")]
         [HttpGet("{chld}")]
         public async Task<ActionResult<ChildApprovalDto>> GetChildApprovalById(int chld)
         {
@@ -39,7 +39,9 @@ namespace API.Controllers
             return _mapper.Map<ChildApprovalDto>(thchildpproved);
             // return Ok(mychild);
         }
-        [Authorize]
+
+
+         [Authorize(Policy="CanReviewAndApprove")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ChildApprovalDto>>> GetAllChildrenApprovalsAsync()
         {
@@ -50,7 +52,7 @@ namespace API.Controllers
         }
    
 
-         [Authorize]
+        [Authorize(Policy="CanReviewAndApprove")]
         [HttpPost]
          public async Task<ActionResult<ReviewChildDto>> AddReviewChild(int id, ChildApproval childApproval)
         {
@@ -62,7 +64,7 @@ namespace API.Controllers
                  return NotFound("The Child to approved was not found");
             }
                
-            var childId = childToApproval.ld;
+            var childId = childToApproval.Id;
 
             //get the logged in user doing the reviewing
             var approvedBy = await _userManager.FindByEmailFromClaimsPrinciple(User);

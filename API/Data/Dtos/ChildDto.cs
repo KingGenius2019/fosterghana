@@ -9,7 +9,7 @@ namespace API.Data.Dtos
 {
     public class ChildDto
     {
-        public int ld { get; set; }
+        public int Id { get; set; }
        
         public string ChildCode { get; set; }
         [Required]
@@ -38,7 +38,7 @@ namespace API.Data.Dtos
         public DateTime DateFound { get; set; }
 
         [Required]
-        [StringLength(80)]
+        [StringLength(120)]
         public string Region { get; set; } = string.Empty;
 
         public string PlaceOfBirth { get; set; } = string.Empty;

@@ -44,6 +44,7 @@ namespace API.Data
        public DbSet<ApplicantPhotos> ApplicantPhotos {get; set;}
        public DbSet<ApplicantHomeStudyReport> ApplicantHomeStudyReports {get; set;}
        public DbSet<ApplicationApproval> ApplicationApprovals {get; set;}
+        public DbSet<Placement> Placements {get; set;}
 
        protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -52,13 +53,14 @@ namespace API.Data
           
          builder.Entity<Child>()
         .Property(c => c.SequenceNumbers)
-        .HasDefaultValueSql("NEXT VALUE FOR OrderNumbers");
+        .HasDefaultValueSql("nextval('\"OrderNumbers\"')");
 
          builder.HasSequence<int>("OrderedNumber");
 
           builder.Entity<FosterApplications>()
         .Property(p => p.SequenceNumber)
-        .HasDefaultValueSql("NEXT VALUE FOR OrderedNumber");
+        // .HasDefaultValueSql("NEXT VALUE FOR OrderedNumber");
+        .HasDefaultValueSql("nextval('\"OrderedNumber\"')");
            
                 builder.Entity<RegionsInGhana>()
                 .HasMany(ur => ur.Districts)
@@ -70,10 +72,27 @@ namespace API.Data
             .HasAlternateKey(c => c.RegionCode)
             .HasName("AlternateKey_RegionCode");
 
-             builder.Entity<ApplicantHomeStudyReport>()
+              builder.Entity<Child>()
+              .HasMany(e => e.ChildPlacement)
+              .WithOne(e => e.Children)
+              .HasForeignKey(ur => ur.Childid)
+              .IsRequired();
+
+               builder.Entity<Placement>()
+              .HasOne(e => e.Applications)
+              .WithOne(e => e.ParentPlacement)
+              .HasForeignKey<Placement>(ur => ur.ApplyId)
+              .IsRequired();
+            
+               builder.Entity<ApplicantHomeStudyReport>()
              .HasOne(b => b.FosterApplications)
             .WithOne(i => i.ApplicantHomeStudyReports)
              .HasForeignKey<ApplicantHomeStudyReport>(b => b.ApplyId);
+
+            //  builder.Entity<ApplicantHomeStudyReport>()
+            //  .HasOne(b => b.FosterApplications)
+            // .WithOne(i => i.ApplicantHomeStudyReports)
+            //  .HasForeignKey<ApplicantHomeStudyReport>(b => b.ApplyId);
                 
             base.OnModelCreating(builder);
             

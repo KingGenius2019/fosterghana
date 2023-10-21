@@ -36,5 +36,7 @@ namespace API.Entities
         public string AppUserId {get; set;}
         public AppUser User {get; set;}
 
+        // public Placement Placements {get; set;}
+
     }
 }
